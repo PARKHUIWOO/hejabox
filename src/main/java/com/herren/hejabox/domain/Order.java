@@ -1,7 +1,10 @@
 package com.herren.hejabox.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.aspectj.weaver.ast.Or;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @Getter @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
     @Id
@@ -61,5 +65,65 @@ public class Order {
         this.delivery = delivery;
         delivery.setOrder(this);
     }
+
+    //== 생성 메서드 ==//
+    // 주문 생성이 order만 생성해야될게 아니라, delivery, orderitem있어야 되어서 생성 메서드가 별도로 있는 게 좋다.
+    // 주문하려면 멤버, 배송정보, 아이템, 아이템은 여러 개 등록할 수 있으니 ...문법 사용
+
+    // 앞으로 뭔가 생성해야되는 지점을 변경해야되면 이것만 바꾸면 된다.
+    public static Order createOrder(Member member, Delivery delivery, OrderItem... orderItems) {
+        Order order = new Order();
+        order.setMember(member);
+        order.setDelivery(delivery);
+
+        for (OrderItem orderItem : orderItems) {
+            order.addOrderItem(orderItem);
+        }
+        order.setStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+        return order;
+    }
+
+    /*
+    비즈니스 로직이 대부분 엔티티에 있다.
+    그리고 service 에는 단순 엔티티에 필요한 요청을 위임하는 역할을 한다.
+    이러한 패턴을 domain model pattern이라고 한다.
+    반대로 엔티티에 비즈니스 로직이 없고, 서비스 계층에서 비즈니스 로직을 처리하는 것을 트랜잭션 스크립트 패턴
+     */
+
+    //== 비즈니스 로직 ==//
+
+    /**
+     * 주문 취소
+     */
+    public void cancel() {
+        if (delivery.getStatus() == DeliveryStatus.COMP) {
+            throw new IllegalStateException("이미 전송된 상품은 취소가 불가능합니다.");
+        }
+
+        this.setStatus(OrderStatus.CANCEL);
+        for (OrderItem orderItem : orderItems) {
+            orderItem.cancel();
+        }
+    }
+
+    //== 조회 로직 ==//
+    /**
+     * 전체 주문 가격 조회
+     */
+    //        return orderItems.stream()
+    //                .mapToInt(OrderItem::getTotalPrice)
+    //                .sum();
+
+    // 아래가 원본, 위에가 줄인거거
+
+    public int getTotalPrice() {
+        int totalPrice = 0;
+        for (OrderItem orderItem : orderItems) {
+            totalPrice += orderItem.getTotalPrice(); // 주문할 때 주문가격과 수량이 있어서 곱해줘야 함.
+        }
+        return totalPrice;
+    }
+
 
 }

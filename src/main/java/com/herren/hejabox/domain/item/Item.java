@@ -1,6 +1,7 @@
 package com.herren.hejabox.domain.item;
 
 import com.herren.hejabox.domain.Category;
+import com.herren.hejabox.exception.NotEnoughStockException;
 import com.sun.javafx.beans.IDProperty;
 import lombok.Getter;
 import lombok.Setter;
