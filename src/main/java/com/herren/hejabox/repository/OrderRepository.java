@@ -85,7 +85,7 @@ public class OrderRepository {
     /**
      * JPA Criteria
      */
-    // jpa가 제공하는 표준 동적쿼리 빌드해주는 jpql을 java 코드로 작성할 수 있게 해주는 방법
+
     public List<Order> findAllByCriteria(OrderSearch orderSearch) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Order> cq = cb.createQuery(Order.class);
