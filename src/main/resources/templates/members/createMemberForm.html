@@ -8,21 +8,19 @@
 </style>
 <body>
 <div class="container">
+    <!-- 폼 대신 엔티티로 처리하면 화면에 종속되어 뭐가 계속 추가되어 유지보수 힘듬 비즈니스 로직에만 디펜던시가 있도록. -->
+    <!-- api를 만들 때에는 엔티티를 절대로 반환하면 안된다. member 엔티티 반환하면 패스워드 노출, api 스펙 변함 -->
     <div th:replace="fragments/bodyHeader :: bodyHeader"/>
-    <form role="form" action="/members/new" th:object="${memberForm}"
-          method="post">
-        <div class="form-group">
+    <form role="form" action="/members/new" th:object="${memberForm}" method="post"> <!--th:object -> 폼안에선 이 객체를 쓰겠다. memberForm에 post로 넘어간다. -->
+        <div class="form-group"> <!-- 그럼 post controller를 만들면 된다. -->
             <label th:for="name">이름</label>
-            <input type="text" th:field="*{name}" class="form-control"
-                   placeholder="이름을 입력하세요"
-                   th:class="${#fields.hasErrors('name')}? 'form-controlfieldError' : 'form-control'">
-            <p th:if="${#fields.hasErrors('name')}"
-               th:errors="*{name}">Incorrect date</p>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요"
+                   th:class="${#fields.hasErrors('name')}? 'form-control fieldError' : 'form-control'"> <!--name이라는 에러가 있으면 css 빨간색 껍데기-->
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Incorrect date</p> <!-- fields 에러에 이름이 있으면 name에 대한 에러메시지 뽑아 출력 -->
         </div>
         <div class="form-group">
             <label th:for="city">도시</label>
-            <input type="text" th:field="*{city}" class="form-control"
-                   placeholder="도시를 입력하세요">
+            <input type="text" th:field="*{city}" class="form-control" placeholder="도시를 입력하세요"> <!-- html에서 id랑 name이 th:field -->
         </div>
         <div class="form-group">
             <label th:for="street">거리</label>

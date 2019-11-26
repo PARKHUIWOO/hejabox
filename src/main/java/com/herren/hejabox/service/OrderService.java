@@ -8,6 +8,7 @@ import com.herren.hejabox.domain.item.Item;
 import com.herren.hejabox.repository.ItemRepository;
 import com.herren.hejabox.repository.MemberRepository;
 import com.herren.hejabox.repository.OrderRepository;
+import com.herren.hejabox.repository.OrderSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +61,7 @@ public class OrderService {
     }
 
     //검색
-//    public List<Order> findOrders(OrderSearch orderSearch) {
-//        return orderRepository.findAll(orderSearch);
-//    }
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAllByString(orderSearch);
+    }
 }

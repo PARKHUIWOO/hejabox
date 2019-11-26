@@ -31,22 +31,9 @@ public class OrderRepository {
 //    }
 
     public List<Order> findAllByString(OrderSearch orderSearch) {
-        // order와 연관된 member를 조인해 jpql 참고.
-        // 이건 값이 다 있다는 가정하에 작성한거임. (null이든 상관없이 일단 다 가져와서 테스트 진행)
-//        List<Order> resultList = em.createQuery("select o from Order o join o.member m" +
-//                " where o.status = :status " +
-//                " and m.name like :name", Order.class)
-//                .setParameter("status", orderSearch.getOrderStatus())
-//                .setParameter("name", orderSearch.getMemberName())
-//                .getMaxResults(1000)
-//                .getResultList();
-//
-//        return resultList;
-
-        // 이렇게 문자로 하는건 버그가 심하다. 이렇게하면 번거롭고 실수가 많이 발생한다다
-       String jpql = "select o from Order o join o.member m";
+        //language=JPAQL
+        String jpql = "select o From Order o join o.member m";
         boolean isFirstCondition = true;
-
         //주문 상태 검색
         if (orderSearch.getOrderStatus() != null) {
             if (isFirstCondition) {
@@ -55,9 +42,8 @@ public class OrderRepository {
             } else {
                 jpql += " and";
             }
-            jpql += "o.status = :status";
+            jpql += " o.status = :status";
         }
-
         //회원 이름 검색
         if (StringUtils.hasText(orderSearch.getMemberName())) {
             if (isFirstCondition) {
@@ -66,19 +52,16 @@ public class OrderRepository {
             } else {
                 jpql += " and";
             }
-            jpql += "m.name like :name";
+            jpql += " m.name like :name";
         }
-
         TypedQuery<Order> query = em.createQuery(jpql, Order.class)
-                .setMaxResults(1000);
-
-        if (orderSearch.getOrderStatus() != null) { // 오더 상태가 널이 아니라 있으면, 쿼리에 파라미터 세팅
+                .setMaxResults(1000); //최대 1000건
+        if (orderSearch.getOrderStatus() != null) {
             query = query.setParameter("status", orderSearch.getOrderStatus());
         }
-        if (StringUtils.hasText(orderSearch.getMemberName())) { // 멤버 네임도 셋 파라미터
+        if (StringUtils.hasText(orderSearch.getMemberName())) {
             query = query.setParameter("name", orderSearch.getMemberName());
         }
-
         return query.getResultList();
     }
 
@@ -94,13 +77,13 @@ public class OrderRepository {
 
         List<Predicate> criteria = new ArrayList<>();
 
-        // 주문 상태 검색
+        // 상태 검색
         if (orderSearch.getOrderStatus() != null) {
             Predicate status = cb.equal(o.get("status"), orderSearch.getOrderStatus());
             criteria.add(status);
         }
 
-        // 회원 이름 검색
+        // 이름 검색
         if (StringUtils.hasText(orderSearch.getMemberName())) {
             Predicate name =
                     cb.like(m.<String>get("name"),"%" + orderSearch.getMemberName() + "%");
