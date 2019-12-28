@@ -1,13 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/HEJABOX?serverTimezone=UTC?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/jpashop?serverTimezone=UTC?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
     password: root
 
   jpa:
     hibernate:
-      ddl-auto: create # when application is run, re-creating after dropping the table
+      ddl-auto: none # when application is run, re-creating after dropping the table
+      #ddl-auto: update
     properties:
       hibernate:
         # show_sql: true
